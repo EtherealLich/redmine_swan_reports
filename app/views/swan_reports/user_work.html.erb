@@ -1,0 +1,27 @@
+<%= javascript_include_tag 'reports.js', :plugin => 'redmine_swan_reports' %> 
+<%= stylesheet_link_tag 'reports.css', :plugin => 'redmine_swan_reports' %>
+
+<h2>Отчет о работе сотрудника</h2>
+
+<%= form_tag("/reports/user_work", method: "post", :id => 'filter_form', :class => 'multiple-submit') do %>
+  <p><label for="group_id">Отдел</label>
+  <div id='groups_list'>
+  <%= select_tag 'group_id', content_tag(:option, '<Все>', :value=>"")+options_from_collection_for_select(@groups, 'id', 'name', @current_group_id), onChange: "update_users(this.value, $('#users_list'));" %>
+  </div></p>
+  <p><label for="user_id">Пользователь</label>
+  <div id='users_list'>
+  <%= render :partial => 'users_list', :locals => {:users => @users, :current_user_id => @user_id} %>
+  </div></p>
+  <p><label for="start_date">Дата начала</label>
+  <%= text_field_tag('start_date', @start_date || Date.today.at_beginning_of_week.strftime, :size => 10) %>
+  <%= calendar_for('start_date') %>
+  </p> 
+  <p><label for="end_date">Дата окончания</label>
+  <%= text_field_tag('end_date', @end_date || Date.today.at_end_of_week.strftime, :size => 10) %>
+  <%= calendar_for('end_date') %>
+  </p> 
+  <%= submit_tag("Сформировать отчет") %>
+<% end %>
+<br/><br/>
+
+<%= render :partial => 'user_work_table', :locals => {:work_entries => @work_entries, :planned_issues => @planned_issues, :end_date => @end_date_end_of_day, :user_id => @user_id} %>

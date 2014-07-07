@@ -1,0 +1,80 @@
+<% if work_entries || planned_issues %>
+<table class="list related-issues">
+	<thead>
+		<tr>
+			<th rowspan=2>&nbsp;</th>
+			<th rowspan=2>&nbsp;</th>
+			<th rowspan=2>#</th>
+			<th rowspan=2>Проект</th>
+            <th rowspan=2>Трекер</th>
+			<th rowspan=2>Статус</th>
+			<th rowspan=2>Тема</th>
+			<th colspan=3>Трудозатраты</th>
+			<th colspan=2>Дата выполнения</th>
+			<th rowspan=2>Деятельность</th>
+			<th rowspan=2>Комментарий</th>
+		</tr>
+		<tr>
+			<th>план</th>
+			<th>факт</th>
+            <th>всего</th>
+			<th>план</th>
+			<th>факт</th>
+		</tr>
+    </thead>
+    <tbody>
+	  <% reset_cycle %>
+	  <% if work_entries %>
+		  <% prev_date = nil%>
+		  <% work_entries.each do |work_entry| -%>
+			<% issue = work_entry.issue %>
+			<% if prev_date != work_entry.spent_on %>
+				<tr class="date_row">
+					<td colspan=14 class="date_row"><%= work_entry.spent_on%></td>
+				</tr>
+			<% prev_date = work_entry.spent_on %>
+			<% end %>
+			<tr class="issue <%= work_entry.css_class %> <%= cycle('odd', 'even') %> hascontextmenu">
+				<td><%= work_entry.before_status %></td>
+				<td><%= work_entry.after_status %></td>
+				<td class="id"><a href="<%= issue_path(issue) if issue %>" target="_blank"><%= issue.id if issue %></a></td>
+				<td class="subject"><a href="<%= project_path(issue.project) if issue %>" target="_blank"><%= issue.project.name if issue %></a></td>
+				<td class="tracker"><%= issue.tracker.name if issue %></td>
+				<td class="status"><%= issue.status.name if issue%></td>
+				<td class="subject"><a href="<%= issue_path(issue) if issue %>" target="_blank"><%= issue.subject if issue %></a></td>
+				<td class="<%= 'overwork' if work_entry.overwork %>"><%= work_entry.plan_hours %></td>
+				<td class="<%= 'overwork' if work_entry.overwork %>"><%= work_entry.hours %></td>
+				<td class="<%= 'overwork' if work_entry.overwork %>"><%= work_entry.spent_hours_user_on_date.round(2) %></td>
+				<td class="<%= 'overdue' if work_entry.overdue %>"><%= work_entry.due_date_on_date != '' ? format_date(work_entry.due_date_on_date) : '' %></td>
+				<td class="<%= 'overdue' if work_entry.overdue %>"><%= work_entry.user_assigned_at_end_of_day ? '' : format_date(work_entry.spent_on) %></td>
+				<td><%= work_entry.activity.name %></td>
+				<td class="subject"><%= work_entry.comments.html_safe %></td>
+			</tr>
+		  <% end -%>
+	  <% end -%>
+	  <% if planned_issues -%>
+	    <tr class="date_row">
+		  <td colspan=14 class="date_row">В плане</td>
+	    </tr>
+		<% planned_issues.each do |issue| -%>
+			<tr class="issue <%= issue.css_class %> <%= cycle('odd', 'even') %> hascontextmenu">
+				<td><%= issue.plan_status %></td>
+				<td>&nbsp;</td>
+				<td class="id"><a href="<%= issue_path(issue) if issue %>" target="_blank"><%= issue.id if issue %></a></td>
+				<td class="subject"><a href="<%= project_path(issue.project) if issue %>" target="_blank"><%= issue.project.name if issue %></a></td>
+				<td class="tracker"><%= issue.tracker.name if issue %></td>
+				<td class="status"><%= issue.status.name if issue%></td>
+				<td class="subject"><a href="<%= issue_path(issue) if issue %>" target="_blank"><%= issue.subject if issue %></a></td>
+				<td class="<%= 'overwork' if issue.overwork %>"><%= issue.user_plan_hours_on_date(end_date, user_id) %></td>
+				<td>&nbsp;</td>
+				<td class="<%= 'overwork' if issue.overwork %>"><%= issue.spent_hours_user_on_date(end_date, user_id).round(2) %></td>
+				<td><%= issue.due_date_on_date(end_date)!= '' ? format_date(issue.due_date_on_date(end_date)) : '' %></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		<% end -%>
+	  <% end -%>
+	</tbody>
+</table>
+<% end -%>

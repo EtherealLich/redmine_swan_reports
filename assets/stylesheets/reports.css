@@ -1,0 +1,8 @@
+tr.date_row { font-weight: bold; text-align: left; }
+table.list td.date_row { font-weight: bold; text-align: left; }
+tr.immediate {background-color:#f3aeaa;}
+tr.project {background-color:#aef3aa;}
+tr.other_activity {color: #aaa}
+
+td.overwork {color: red; font-weight: bold;}
+td.overdue {color: red; font-weight: bold;}
